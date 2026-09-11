@@ -1,5 +1,5 @@
 import { Html } from '@react-three/drei'
-import { forwardRef, useImperativeHandle, useMemo, useRef } from 'react'
+import { forwardRef, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import { BufferGeometry, Group, Object3D, Vector3 } from 'three'
 
 type LabelName = 'FLIGHT CORE' | 'POWER MODULE' | 'VISION SYSTEM' | 'PROPULSION'
@@ -19,8 +19,20 @@ export const EngineeringLabels = forwardRef<EngineeringLabelsHandle>(function En
   const root = useRef<Group>(null)
   const geometries = useRef<Partial<Record<LabelName, BufferGeometry<any>>>>({})
   const anchors = useMemo(() => new Map(labels.map(({ name, position }) => [name, new Vector3(...position)])), [])
+  // drei's <Html> renders into a DOM portal that ignores the parent group's
+  // `visible` flag, so the caption boxes need their own mount switch. Keyed off
+  // a boolean so this does not re-render the overlay on every scroll frame.
+  const [shown, setShown] = useState(false)
+  const shownRef = useRef(false)
+
   useImperativeHandle(ref, () => ({
-    setVisibility: (opacity) => { if (root.current) root.current.visible = opacity > .02 },
+    setVisibility: (opacity) => {
+      if (root.current) {
+        root.current.visible = opacity > .02
+        const next = opacity > .02
+        if (next !== shownRef.current) { shownRef.current = next; setShown(next) }
+      }
+    },
     connect: (name, component, anchor) => {
       const geometry = geometries.current[name]
       if (!geometry || !root.current) return
@@ -30,10 +42,11 @@ export const EngineeringLabels = forwardRef<EngineeringLabelsHandle>(function En
       geometry.computeBoundingSphere()
     },
   }), [anchors])
+
   return <group ref={root} visible={false}>
     {labels.map(({ name, position }) => <group key={name} position={position}>
-      <line><bufferGeometry ref={(geometry) => { if (geometry) geometries.current[name] = geometry }} /><lineBasicMaterial color="#d86b31" transparent opacity={.72} /></line>
-      <Html transform distanceFactor={9} position={[0, .06, 0]} style={{ pointerEvents: 'none' }}><span className="engineering-label">{name}</span></Html>
+      <line><bufferGeometry ref={(geometry) => { if (geometry) geometries.current[name] = geometry }} /><lineBasicMaterial color="#c9a227" transparent opacity={.8} /></line>
+      {shown && <Html transform distanceFactor={9} position={[0, .06, 0]} style={{ pointerEvents: 'none' }}><span className="engineering-label">{name}</span></Html>}
     </group>)}
   </group>
 })

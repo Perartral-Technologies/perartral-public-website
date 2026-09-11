@@ -1,7 +1,7 @@
 import { Canvas, useFrame } from '@react-three/fiber'
 import { ContactShadows, Environment, PerspectiveCamera } from '@react-three/drei'
 import { Suspense, useRef } from 'react'
-import { PerspectiveCamera as ThreePerspectiveCamera, Vector3 } from 'three'
+import { Group, PerspectiveCamera as ThreePerspectiveCamera, Vector3 } from 'three'
 import { DroneModel, DroneRefs } from './DroneModel'
 import { DroneController } from './DroneController'
 import { ScrollProgress } from '../../hooks/useScrollProgress'
@@ -31,17 +31,36 @@ function CameraRig({ scroll }: { scroll: React.MutableRefObject<ScrollProgress> 
   return <PerspectiveCamera makeDefault position={[.15, 1.05, 7.1]} fov={34} />
 }
 
+/**
+ * The hero headline occupies the left half of the opening frame, so the whole
+ * airframe is shifted right while the headline is on screen and eased back to
+ * centre before the arm deployment begins. Translating the subject is far more
+ * predictable than trying to frame around the type with camera aim alone.
+ */
+function TypeClearanceGroup({ scroll, children }: { scroll: React.MutableRefObject<ScrollProgress>; children: React.ReactNode }) {
+  const group = useRef<Group>(null)
+  useFrame(() => {
+    if (!group.current) return
+    const clear = 1 - engineeredEase(range(scroll.current.current, 0, .26))
+    group.current.position.x = clear * 1.95
+  })
+  return <group ref={group}>{children}</group>
+}
+
 export function DroneScene({ scroll }: { scroll: React.MutableRefObject<ScrollProgress> }) {
   const drone = useRef<DroneRefs>(null)
-  return <Canvas shadows dpr={[1, 1.7]} gl={{ antialias: true, powerPreference: 'high-performance' }}>
-    <color attach="background" args={['#0b0d0e']} />
+  // The canvas is transparent so the warm ivory backdrop lives in CSS and the
+  // 3D subject sits on the same surface as the typography.
+  return <Canvas shadows dpr={[1, 1.7]} gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}>
     <CameraRig scroll={scroll} />
-    <ambientLight intensity={.65} />
-    <directionalLight position={[4, 6, 4]} intensity={4} castShadow shadow-mapSize={[1024, 1024]} />
-    <spotLight position={[-5, 2, -2]} color="#b8e0e5" intensity={50} angle={.5} penumbra={1} />
-    <pointLight position={[0, -1, 4]} color="#d86b31" intensity={13} distance={8} />
-    <Suspense fallback={null}><DroneController drone={drone} scroll={scroll}><DroneModel ref={drone} position={[0, 0, 0]} /></DroneController></Suspense>
-    <ContactShadows position={[0, -1.15, 0]} opacity={.42} scale={11} blur={2.5} far={4} />
-    <Environment preset="city" />
+    <ambientLight intensity={.95} />
+    <directionalLight position={[4, 6, 4]} intensity={3.2} castShadow shadow-mapSize={[1024, 1024]} />
+    <directionalLight position={[-5, 2, -3]} intensity={1.15} color="#fff4e2" />
+    <spotLight position={[0, 3.4, -6]} color="#c9a227" intensity={26} angle={.62} penumbra={1} />
+    <Suspense fallback={null}>
+      <TypeClearanceGroup scroll={scroll}><DroneController drone={drone} scroll={scroll}><DroneModel ref={drone} position={[0, 0, 0]} /></DroneController></TypeClearanceGroup>
+    </Suspense>
+    <ContactShadows position={[0, -1.15, 0]} opacity={.3} scale={11} blur={2.6} far={4} color="#1a1712" />
+    <Environment preset="studio" />
   </Canvas>
 }

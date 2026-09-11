@@ -29,3 +29,12 @@ pnpm-debug.log*
 *.sw?
 .DS_Store
 Thumbs.db
+
+# Blender source files (large binaries - keep only exported GLBs in public/models)
+blender/
+*.blend
+*.blend1
+
+# Local tooling
+.commandcode/
+.pdf

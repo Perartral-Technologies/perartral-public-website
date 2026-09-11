@@ -92,5 +92,5 @@ export function DroneController({ drone, scroll, children }: { drone: MutableRef
     labels.current?.connect('VISION SYSTEM', d.nodes.CameraGimbal, labelAnchors.CameraGimbal)
     labels.current?.connect('PROPULSION', d.nodes.FrontRightArm, labelAnchors.FrontRightArm)
   })
-  return <group ref={group}>{children}<pointLight ref={inspectionLight} color="#d86b31" distance={3.5} decay={2} intensity={0} /><EngineeringLabels ref={labels} /></group>
+  return <group ref={group}>{children}<pointLight ref={inspectionLight} color="#b0832c" distance={3.5} decay={2} intensity={0} /><EngineeringLabels ref={labels} /></group>
 }
