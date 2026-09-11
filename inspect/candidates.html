@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>rotor candidates</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0d1216; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.180.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const P = new URLSearchParams(location.search);
+const glbUrl = P.get('glb') || '../drone2.glb';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0d1216);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(2);
+document.body.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x223040, 2.4));
+const d1 = new THREE.DirectionalLight(0xffffff, 1.6); d1.position.set(0, 6, 0); scene.add(d1);
+const d2 = new THREE.DirectionalLight(0x99bbff, 0.8); d2.position.set(3, 3, 3); scene.add(d2);
+
+// candidate centres (X, Z) from the disc scan
+const CANDS = [
+  [-0.270,  0.550], [-0.270, -0.570],
+  [-0.100,  0.890], [-0.090, -0.910],
+  [ 0.070,  0.350], [ 0.050, -0.350],
+  [-0.330, -0.270], [-0.330,  0.250],
+  [-0.530,  0.010],
+];
+
+new GLTFLoader().load(glbUrl, (gltf) => {
+  const model = gltf.scene;
+  model.traverse((o) => {
+    if (!o.isMesh) return;
+    if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals();
+    o.material = new THREE.MeshStandardMaterial({
+      color: 0xe8edf1, metalness: 0.15, roughness: 0.55, side: THREE.DoubleSide,
+    });
+  });
+  scene.add(model);
+
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+
+  // top-down ortho, correct aspect
+  const aspect = innerWidth / innerHeight;
+  const half = Math.max(size.x, size.z) * 0.55;
+  let hw = half * aspect, hh = half;
+  if (aspect < 1) { hw = half; hh = half / aspect; }
+  const cam = new THREE.OrthographicCamera(-hw, hw, hh, -hh, 0.01, 100);
+  cam.position.set(center.x, center.y + 6, center.z);
+  cam.up.set(0, 0, -1);
+  cam.lookAt(center.x, center.y, center.z);
+
+  const R = 0.125;
+  for (let i = 0; i < CANDS.length; i++) {
+    const [hx, hz] = CANDS[i];
+    const ring = new THREE.Mesh(
+      new THREE.TorusGeometry(R, 0.008, 8, 80),
+      new THREE.MeshBasicMaterial({ color: 0xff2244 })
+    );
+    ring.position.set(hx, center.y, hz);
+    ring.rotation.x = Math.PI / 2;
+    scene.add(ring);
+
+    const cv = document.createElement('canvas');
+    cv.width = 128; cv.height = 128;
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle = '#ff2244';
+    ctx.beginPath(); ctx.arc(64, 64, 58, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 84px ui-monospace, monospace';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(String(i + 1), 64, 68);
+    const spr = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: new THREE.CanvasTexture(cv), depthTest: false,
+    }));
+    spr.position.set(hx, center.y + 0.30, hz);
+    spr.scale.set(0.22, 0.22, 1);
+    scene.add(spr);
+  }
+
+  renderer.render(scene, cam);
+  window.__ready = true;
+}, undefined, (e) => { window.__error = String(e); });
+</script>
+</body>
+</html>

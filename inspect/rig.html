@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>rig debug</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #10151a; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; top: 8px; left: 8px; z-index: 10;
+    font: 11px/1.5 ui-monospace, monospace; color: #9fb2bd;
+    background: rgba(0,0,0,.6); padding: 8px 10px; border-radius: 6px; white-space: pre; }
+</style>
+</head>
+<body>
+<div id="hud">loading…</div>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.180.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const hud = document.getElementById('hud');
+const P = new URLSearchParams(location.search);
+const explode = parseFloat(P.get('explode') || '0');
+const spin = P.get('spin') === '1';
+const view = P.get('view') || 'top';
+const glbUrl = P.get('glb') || '../site/assets/drone.glb';
+const markerR = parseFloat(P.get('r') || '0');
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x10151a);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+document.body.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xcfe0ea, 0x1a2026, 1.9));
+const k = new THREE.DirectionalLight(0xffffff, 2.2); k.position.set(3, 5, 4); scene.add(k);
+const r = new THREE.DirectionalLight(0x89b0ff, 1.1); r.position.set(-4, 1, -3); scene.add(r);
+
+const PALETTE = [0xdfe6ea, 0xff4d6d, 0x22d3ee, 0xfacc15, 0x84cc16, 0xa855f7, 0xfb923c];
+const parts = [];
+
+function makeCamera(center, size, view) {
+  const maxDim = Math.max(size.x, size.y, size.z);
+  if (view === 'persp') {
+    const cam = new THREE.PerspectiveCamera(40, innerWidth / innerHeight, 0.01, 200);
+    cam.position.set(center.x + maxDim * 1.7, center.y + maxDim * 1.35, center.z + maxDim * 1.7);
+    cam.lookAt(center);
+    return cam;
+  }
+  const aspect = innerWidth / innerHeight;
+  let half = maxDim * 0.62;
+  let hw = half, hh = half;
+  if (aspect >= 1) hw = half * aspect; else hh = half / aspect;
+  const cam = new THREE.OrthographicCamera(-hw, hw, hh, -hh, 0.01, 500);
+  const d = maxDim * 3;
+  if (view === 'top') { cam.position.set(center.x, center.y + d, center.z); cam.up.set(0, 0, -1); }
+  else if (view === 'bottom') { cam.position.set(center.x, center.y - d, center.z); cam.up.set(0, 0, 1); }
+  else if (view === 'front') { cam.position.set(center.x, center.y, center.z - d); cam.up.set(0, 1, 0); }
+  else if (view === 'back') { cam.position.set(center.x, center.y, center.z + d); cam.up.set(0, 1, 0); }
+  else if (view === 'left') { cam.position.set(center.x - d, center.y, center.z); cam.up.set(0, 1, 0); }
+  else { cam.position.set(center.x + d, center.y, center.z); cam.up.set(0, 1, 0); }
+  cam.lookAt(center);
+  return cam;
+}
+
+let camera = null;
+
+new GLTFLoader().load(glbUrl, (gltf) => {
+  const model = gltf.scene;
+  const lines = [];
+
+  model.traverse((o) => {
+    if (!o.isMesh) return;
+    if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals();
+    const idx = parts.length;
+    o.material = new THREE.MeshStandardMaterial({
+      color: PALETTE[idx % PALETTE.length],
+      metalness: 0.3, roughness: 0.45, side: THREE.DoubleSide,
+      vertexColors: !!o.geometry.attributes.color,
+    });
+    const g = o.geometry;
+    g.computeBoundingBox();
+    const bb = g.boundingBox;
+    const tris = (g.index ? g.index.count : g.attributes.position.count) / 3;
+    lines.push(`${(o.name || 'mesh').padEnd(9)} t=${String(tris).padStart(5)} sp=${(bb.max.x - bb.min.x).toFixed(2)},${(bb.max.y - bb.min.y).toFixed(2)},${(bb.max.z - bb.min.z).toFixed(2)}`);
+    if (o.name.startsWith('Prop')) parts.push({ obj: o, home: o.position.clone() });
+  });
+
+  scene.add(model);
+
+  // world-space bbox so markers line up with model coordinates
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  lines.push('', `size ${size.x.toFixed(3)} ${size.y.toFixed(3)} ${size.z.toFixed(3)}`);
+  lines.push(`ctr  ${center.x.toFixed(3)} ${center.y.toFixed(3)} ${center.z.toFixed(3)}`);
+  hud.textContent = lines.join('\n');
+
+  camera = makeCamera(center, size, view);
+
+  const hubsParam = P.get('hubs');
+  if (hubsParam) {
+    for (const pair of hubsParam.split(';')) {
+      const [hx, hz] = pair.split(',').map(Number);
+      const p = new THREE.Vector3(hx, center.y, hz);
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(markerR || 0.12, 0.006, 8, 72),
+        new THREE.MeshBasicMaterial({ color: 0xff2d55 })
+      );
+      ring.position.copy(p);
+      ring.rotation.x = Math.PI / 2;
+      scene.add(ring);
+      const dot = new THREE.Mesh(
+        new THREE.SphereGeometry(0.014, 12, 12),
+        new THREE.MeshBasicMaterial({ color: 0x00ffc8 })
+      );
+      dot.position.copy(p);
+      scene.add(dot);
+    }
+  }
+
+  window.__ready = true;
+}, undefined, (e) => { hud.textContent = 'ERR ' + e; window.__error = String(e); });
+
+const clock = new THREE.Clock();
+(function loop() {
+  requestAnimationFrame(loop);
+  const t = clock.getElapsedTime();
+  for (const p of parts) {
+    if (explode) {
+      const dir = p.home.clone().normalize();
+      p.obj.position.copy(p.home).addScaledVector(dir, explode);
+    }
+    if (spin) p.obj.rotation.y = t * 16;
+  }
+  if (camera) renderer.render(scene, camera);
+})();
+</script>
+</body>
+</html>

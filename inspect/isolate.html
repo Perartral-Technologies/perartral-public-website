@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>rotor isolation</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b0f13; overflow: hidden; }
+  canvas { display: block; }
+  #hud { position: fixed; top: 8px; left: 8px; z-index: 9;
+    font: 12px/1.5 ui-monospace, monospace; color: #9fb2bd;
+    background: rgba(0,0,0,.6); padding: 8px 10px; border-radius: 6px; white-space: pre; }
+</style>
+</head>
+<body>
+<div id="hud">loading…</div>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.180.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const P = new URLSearchParams(location.search);
+const mode = P.get('mode') || 'only';      // only | ghost
+const view = P.get('view') || 'top';
+const glb = P.get('glb') || '../site/assets/drone.glb';
+
+const hud = document.getElementById('hud');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b0f13);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+document.body.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x223040, 2.6));
+const d1 = new THREE.DirectionalLight(0xffffff, 2.0); d1.position.set(0, 6, 2); scene.add(d1);
+const d2 = new THREE.DirectionalLight(0x99bbff, 1.0); d2.position.set(3, 2, 3); scene.add(d2);
+
+const COLORS = [0xff2d55, 0x22d3ee, 0xfacc15, 0x84cc16, 0xa855f7];
+
+new GLTFLoader().load(glb, (gltf) => {
+  const model = gltf.scene;
+  const lines = [];
+  let n = 0;
+
+  model.traverse((o) => {
+    if (!o.isMesh) return;
+    const isProp = /^Prop/i.test(o.name || '');
+    if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals();
+
+    if (isProp) {
+      o.material = new THREE.MeshStandardMaterial({
+        color: COLORS[n % COLORS.length],
+        metalness: 0.1, roughness: 0.5, side: THREE.DoubleSide,
+        emissive: new THREE.Color(COLORS[n % COLORS.length]).multiplyScalar(0.25),
+      });
+      n++;
+    } else {
+      o.material = new THREE.MeshStandardMaterial({
+        color: 0x2a3038, metalness: 0.1, roughness: 0.8,
+        side: THREE.DoubleSide,
+        transparent: mode === 'ghost', opacity: mode === 'ghost' ? 0.10 : 1,
+        depthWrite: mode !== 'ghost',
+      });
+      if (mode === 'only') o.visible = false;
+    }
+
+    o.geometry.computeBoundingBox();
+    const bb = o.geometry.boundingBox;
+    lines.push(`${(o.name || '?').padEnd(8)} sp=${(bb.max.x - bb.min.x).toFixed(3)},${(bb.max.y - bb.min.y).toFixed(3)},${(bb.max.z - bb.min.z).toFixed(3)}`);
+  });
+
+  scene.add(model);
+  hud.textContent = lines.join('\n');
+
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const maxDim = Math.max(size.x, size.z);
+
+  if (view === 'top') {
+    const aspect = innerWidth / innerHeight;
+    const half = (mode === 'only' ? maxDim * 0.28 : maxDim * 0.58);
+    let hw = half * aspect, hh = half;
+    if (aspect < 1) { hw = half; hh = half / aspect; }
+    const cam = new THREE.OrthographicCamera(-hw, hw, hh, -hh, 0.01, 200);
+    cam.position.set(center.x, center.y + 8, center.z);
+    cam.up.set(0, 0, -1);
+    cam.lookAt(center.x, center.y, center.z);
+    window.__cam = cam;
+  } else {
+    const cam = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 0.01, 200);
+    cam.position.set(center.x + maxDim * 1.5, center.y + maxDim * 1.2, center.z + maxDim * 1.5);
+    cam.lookAt(center);
+    window.__cam = cam;
+  }
+
+  renderer.render(scene, window.__cam);
+  window.__ready = true;
+}, undefined, (e) => { hud.textContent = 'ERR ' + e; window.__error = String(e); });
+</script>
+</body>
+</html>

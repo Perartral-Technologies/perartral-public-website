@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node/static tooling
+node_modules/
+dist/
+build/
+.parcel-cache/
+.vite/
+
+# Local servers and logs
+*.log
+*.pid
+.env
+.env.*
+!.env.example
+
+# Editors and OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archives and temporary files
+*.tmp
+*.temp
+*.bak
+*.zip
+.commandcode

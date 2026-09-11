@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ATVA 1.5 — Long-Endurance ISR for Coastal Watch</title>
+<meta name="description" content="Autonomous electric fixed-wing VTOL for persistent maritime ISR over India's coastline, creeks and island territories." />
+<link rel="stylesheet" href="./styles.css?v=6" />
+</head>
+<body>
+
+<div id="loader">
+  <div class="panes"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="n mono"><span id="loadPct">0</span></div>
+</div>
+
+<div id="stage"></div>
+
+<header id="nav">
+  <div class="brand">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 2v20M2 12h20M5 5l14 14M19 5L5 19" stroke="currentColor" stroke-width="1.1" />
+    </svg>
+    <span class="name">atva 1.5</span>
+    <span class="dot"></span>
+    <span class="tag">Long-Endurance ISR</span>
+  </div>
+  <div class="nav-right">
+    <span class="meta">Coastal &amp; Maritime Patrol</span>
+    <span class="meta mono" id="clock"></span>
+    <button id="menuBtn">menu</button>
+  </div>
+</header>
+
+<div class="layer">
+
+  <!-- ===================== HERO ===================== -->
+  <section id="hero">
+    <div class="hero-copy">
+      <p class="reveal">
+        Persistent aerial watch over India's coastline, creeks and island territories.
+        <span class="muted">An autonomous electric fixed-wing VTOL built for long-endurance maritime ISR.</span>
+      </p>
+      <button class="scrollbtn reveal" id="scrollDown">
+        <span>Scroll Down</span>
+        <span class="ring"></span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===================== INTRO ===================== -->
+  <section id="intro-section">
+    <div class="wrap">
+      <div class="words" id="introWords"></div>
+      <div class="right"></div>
+    </div>
+  </section>
+
+  <!-- ===================== GEAR / REQUIREMENT ===================== -->
+  <section id="gear">
+    <div class="section-head">
+      <h2 class="display">Requirement</h2>
+      <span class="badge mono">2</span>
+    </div>
+    <div class="gear-feature">
+      <div><span class="label"><i></i>What the force needs</span></div>
+      <div class="copy">
+        A long-endurance, hand-recoverable fixed-wing UAV with EO/IR payload and an
+        AI layer that flags vessels, landings and movement automatically — reducing
+        operator fatigue and response time.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== DRONE LOCK (pinned) ===================== -->
+  <section id="drone-lock">
+    <div class="sticky">
+      <div class="specbar">
+        <div class="statrow">
+          <div class="stat" data-stat="0"><div class="v">240 min</div><div class="k mono">[ ENDURANCE ]</div></div>
+          <div class="stat" data-stat="1"><div class="v">100 km</div><div class="k mono">[ OPERATIONAL RANGE ]</div></div>
+          <div class="stat" data-stat="2"><div class="v">108 km/h</div><div class="k mono">[ CRUISE SPEED ]</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SOLUTIONS ===================== -->
+  <section id="solutions">
+    <div class="section-head">
+      <h2 class="display">Sectors</h2>
+      <span class="badge mono">4</span>
+    </div>
+    <nav class="tabs" id="solTabs">
+      <button class="tab active" data-sol="0">Coastline</button>
+      <button class="tab" data-sol="1">Creeks</button>
+      <button class="tab" data-sol="2">Islands</button>
+      <button class="tab" data-sol="3">Harbour</button>
+    </nav>
+    <div class="solgrid">
+      <div class="lede" id="solLede"></div>
+      <div class="right">
+        <table class="spec" id="solSpec"></table>
+        <div class="chips">
+          <span class="chip">Infiltration</span>
+          <span class="chip">Smuggling</span>
+          <span class="chip">Illegal fishing</span>
+          <span class="chip">Encroachment</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CAPABILITIES ===================== -->
+  <section id="capabilities">
+    <div class="section-head">
+      <h2 class="display">Platform</h2>
+      <span class="badge mono">5</span>
+    </div>
+    <div class="pin">
+      <div class="sticky">
+        <div class="navpane">
+          <button class="capbtn active" data-cap="0">Endurance</button>
+          <button class="capbtn" data-cap="1">Reach</button>
+          <button class="capbtn" data-cap="2">Payload</button>
+          <div class="navmark"><span class="footmark mono">[ platform ]</span></div>
+        </div>
+        <div class="visual"></div>
+        <div class="infopane">
+          <p class="capval" id="capVal">240 min</p>
+          <p class="capdesc" id="capDesc"></p>
+          <span class="footmark mono">[ specs ]</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SOFTWARE / GROUND STATION ===================== -->
+  <section id="software">
+    <div class="section-head">
+      <h2 class="display">Ground</h2>
+      <span class="badge mono">6</span>
+    </div>
+    <div class="plat">
+      <div><span class="label"><i></i>Analytics</span></div>
+      <div class="copy">
+        Pre-planned sector patrol routes, AI vessel and landing detection running on the
+        ground station, a geo-tagged alert feed to the sector control room, and
+        multi-aircraft scheduling so one team keeps a sector under continuous watch.
+      </div>
+    </div>
+    <div id="topo">
+      <div class="feed-head mono">
+        <span>[ geo-tagged alert feed ]</span>
+        <span id="feedStatus">LIVE</span>
+      </div>
+      <button class="marker" data-pt="0" style="left:22%; top:30%">
+        <span>+</span>
+        <div class="tip">
+          <div class="th mono"><span>ALERT 01</span><span>&times;</span></div>
+          <div class="tb"><span class="t">Vessel — AIS dark</span>
+            <p>Contact stopped transmitting 41 min ago inside a designated fishing corridor. Track held on EO/IR, geo-tag pushed to control room.</p></div>
+          <div class="tf mono"><span>response:</span>
+            <span class="risk">intercept cue <span class="bars"><i class="on"></i><i class="on"></i><i class="on"></i></span></span></div>
+        </div>
+      </button>
+      <button class="marker" data-pt="1" style="left:58%; top:64%">
+        <span>+</span>
+        <div class="tip">
+          <div class="th mono"><span>ALERT 02</span><span>&times;</span></div>
+          <div class="tb"><span class="t">Beach landing</span>
+            <p>Two hulls beached on an uninhabited island sector. Movement detected between hulls; timestamps and imagery attached automatically.</p></div>
+          <div class="tf mono"><span>response:</span>
+            <span class="risk">patrol tasking <span class="bars"><i class="on"></i><i class="on"></i><i></i></span></span></div>
+        </div>
+      </button>
+      <button class="marker" data-pt="2" style="left:35%; top:78%">
+        <span>+</span>
+        <div class="tip">
+          <div class="th mono"><span>ALERT 03</span><span>&times;</span></div>
+          <div class="tb"><span class="t">Creek movement</span>
+            <p>Small craft entering a mangrove creek network outside any declared route. Confidence below threshold — flagged for operator review.</p></div>
+          <div class="tf mono"><span>response:</span>
+            <span class="risk">monitor <span class="bars"><i class="on"></i><i></i><i></i></span></span></div>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===================== LANDING ===================== -->
+  <section id="landing-section">
+    <div class="row mono"><span>[ atva 1.5 ]</span><span>[ D:04 H:M ]</span></div>
+    <div class="row mono"><span>[ atva 1.5 ]</span><span>[ D:04 H:M ]</span></div>
+  </section>
+
+  <footer>
+    <div class="top">
+      <p class="big">Persistent watch,<br />one sector at a time.</p>
+      <div class="cols">
+        <div class="col">
+          <p>
+            A four-hour sortie covers a patrol window that would otherwise take six
+            multirotor flights — with automatic detection cutting operator load.
+          </p>
+        </div>
+        <div class="col">
+          <p>Platform</p>
+          <ul>
+            <li>Hybrid VTOL fixed-wing</li>
+            <li>Electric propulsion</li>
+            <li>EO/IR gimbal</li>
+            <li>AIS / radio relay options</li>
+            <li>Ground station analytics</li>
+            <li>Day and night operations</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="bottom">
+      <p class="legal mono">
+        Specification figures are platform design targets. Operational employment is
+        subject to applicable regulations and certification.
+      </p>
+      <p class="mono">ATVA 1.5</p>
+    </div>
+  </footer>
+
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.180.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="./scene.js?v=6"></script>
+<script type="module" src="./ui.js?v=6"></script>
+</body>
+</html>

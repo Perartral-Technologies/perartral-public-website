@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>part contact sheet</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b0f13; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.180.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const P = new URLSearchParams(location.search);
+const glb = P.get('glb') || '../quadrotor%20drone%203d%20model.glb';
+const view = P.get('view') || 'top';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0b0f13);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(2);
+document.body.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x334455, 2.6));
+const l1 = new THREE.DirectionalLight(0xffffff, 2.2); l1.position.set(1, 8, 2); scene.add(l1);
+const l2 = new THREE.DirectionalLight(0x9db8d8, 1.2); l2.position.set(-4, 3, -3); scene.add(l2);
+const l3 = new THREE.DirectionalLight(0xffffff, 1.0); l3.position.set(2, -4, 3); scene.add(l3);
+
+const COLS = 8, ROWS = 4, SPACE = 1.95;
+
+function labelSprite(text, color) {
+  const cv = document.createElement('canvas');
+  cv.width = 256; cv.height = 64;
+  const ctx = cv.getContext('2d');
+  ctx.fillStyle = 'rgba(0,0,0,0.0)';
+  ctx.fillRect(0, 0, 256, 64);
+  ctx.fillStyle = color;
+  ctx.font = 'bold 40px ui-monospace, monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 128, 34);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.anisotropy = 8;
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false }));
+  spr.scale.set(1.5, 0.375, 1);
+  return spr;
+}
+
+const report = [];
+
+new GLTFLoader().load(glb, (gltf) => {
+  const meshes = [];
+  gltf.scene.traverse((o) => { if (o.isMesh) meshes.push(o); });
+  meshes.sort((a, b) => {
+    const ai = parseInt((a.name.match(/(\d+)$/) || [0, 0])[1], 10);
+    const bi = parseInt((b.name.match(/(\d+)$/) || [0, 0])[1], 10);
+    return ai - bi;
+  });
+
+  meshes.forEach((o, k) => {
+    const idx = parseInt((o.name.match(/(\d+)$/) || [0, 0])[1], 10);
+    const g = o.geometry.clone();
+    if (!g.attributes.normal) g.computeVertexNormals();
+    g.computeBoundingBox();
+    const bb = g.boundingBox;
+    const size = new THREE.Vector3(); bb.getSize(size);
+    const ctr = new THREE.Vector3(); bb.getCenter(ctr);
+
+    // centre and normalise so shapes are comparable
+    g.translate(-ctr.x, -ctr.y, -ctr.z);
+    const m = Math.max(size.x, size.y, size.z) || 1;
+    const s = 1.0 / m;
+    g.scale(s, s, s);
+
+    const col = (k % COLS), row = Math.floor(k / COLS);
+    const x = (col - (COLS - 1) / 2) * SPACE;
+    const z = (row - (ROWS - 1) / 2) * SPACE;
+
+    const mat = new THREE.MeshStandardMaterial({
+      color: new THREE.Color().setHSL((k / meshes.length) * 0.9, 0.55, 0.72),
+      metalness: 0.15, roughness: 0.5, side: THREE.DoubleSide,
+    });
+    const mesh = new THREE.Mesh(g, mat);
+    mesh.position.set(x, 0, z);
+    scene.add(mesh);
+
+    const lbl = labelSprite(`${idx}`, '#ffffff');
+    lbl.position.set(x, 0.0, z + SPACE * 0.40);
+    scene.add(lbl);
+
+    const dm = labelSprite(
+      `${(size.x * 1000 | 0)}/${(size.y * 1000 | 0)}/${(size.z * 1000 | 0)}`,
+      '#8fd0ff'
+    );
+    dm.scale.set(1.5, 0.375, 1);
+    dm.position.set(x, 0.0, z + SPACE * 0.40 + 0.30);
+    scene.add(dm);
+
+    report.push({
+      idx, tris: (g.index ? g.index.count : g.attributes.position.count) / 3,
+      dx: +size.x.toFixed(3), dy: +size.y.toFixed(3), dz: +size.z.toFixed(3),
+    });
+  });
+
+  const aspect = innerWidth / innerHeight;
+  const gridW = COLS * SPACE, gridH = ROWS * SPACE;
+  let hw, hh;
+  if (gridW / gridH > aspect) { hw = gridW / 2; hh = hw / aspect; }
+  else { hh = gridH / 2; hw = hh * aspect; }
+  const cam = new THREE.OrthographicCamera(-hw, hw, hh, -hh, 0.01, 200);
+  if (view === 'top') { cam.position.set(0, 30, 0); cam.up.set(0, 0, -1); }
+  else { cam.position.set(0, 12, 24); cam.up.set(0, 1, 0); }
+  cam.lookAt(0, 0, 0);
+
+  renderer.render(scene, cam);
+  window.__report = report;
+  window.__ready = true;
+}, undefined, (e) => { window.__error = String(e); });
+</script>
+</body>
+</html>

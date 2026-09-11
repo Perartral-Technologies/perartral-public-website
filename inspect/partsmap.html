@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>parts colour map</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #0d1216; overflow: hidden; }
+  canvas { display: block; }
+  #legend { position: fixed; top: 6px; left: 6px; z-index: 9;
+    font: 10px/1.35 ui-monospace, monospace; color: #cfe0ea;
+    background: rgba(0,0,0,.62); padding: 6px 8px; border-radius: 5px;
+    display: grid; grid-template-columns: repeat(5, auto); gap: 1px 10px; }
+  #legend b { font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="legend"></div>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.180.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const P = new URLSearchParams(location.search);
+const view = P.get('view') || 'top';
+const glb = P.get('glb') || '../quadrotor%20drone%203d%20model.glb';
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0d1216);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(2);
+document.body.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0x334455, 2.8));
+const l1 = new THREE.DirectionalLight(0xffffff, 1.8); l1.position.set(1, 6, 2); scene.add(l1);
+const l2 = new THREE.DirectionalLight(0x99bbff, 0.9); l2.position.set(-3, 2, -3); scene.add(l2);
+
+const legend = document.getElementById('legend');
+const palette = {};
+
+function hsl(i, n) {
+  const h = (i / n) * 0.92;
+  const c = new THREE.Color();
+  c.setHSL(h, 0.72, 0.55);
+  return c;
+}
+
+new GLTFLoader().load(glb, (gltf) => {
+  const model = gltf.scene;
+  const meshes = [];
+  model.traverse((o) => { if (o.isMesh) meshes.push(o); });
+  meshes.sort((a, b) => {
+    const ai = parseInt((a.name.match(/(\d+)$/) || [0, 0])[1], 10);
+    const bi = parseInt((b.name.match(/(\d+)$/) || [0, 0])[1], 10);
+    return ai - bi;
+  });
+
+  meshes.forEach((o) => {
+    if (!o.geometry.attributes.normal) o.geometry.computeVertexNormals();
+    const idx = parseInt((o.name.match(/(\d+)$/) || [0, 0])[1], 10);
+    const col = hsl(idx, meshes.length);
+    palette[idx] = col;
+    o.material = new THREE.MeshStandardMaterial({
+      color: col, metalness: 0.15, roughness: 0.5, side: THREE.DoubleSide,
+    });
+  });
+
+  scene.add(model);
+
+  legend.innerHTML = meshes.map((o) => {
+    const idx = parseInt((o.name.match(/(\d+)$/) || [0, 0])[1], 10);
+    const c = palette[idx];
+    const hex = '#' + c.getHexString();
+    return `<span><b style="color:${hex}">${idx}</b></span>`;
+  }).join('');
+
+  const box = new THREE.Box3().setFromObject(model);
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+
+  let cam;
+  if (view === 'persp') {
+    cam = new THREE.PerspectiveCamera(35, innerWidth / innerHeight, 0.01, 100);
+    const m = Math.max(size.x, size.y, size.z);
+    cam.position.set(center.x + m * 1.25, center.y + m * 1.5, center.z + m * 1.25);
+    cam.lookAt(center);
+  } else {
+    const aspect = innerWidth / innerHeight;
+    const half = (view === 'top' ? Math.max(size.x, size.z) : Math.max(size.x, size.y)) * 0.58;
+    let hw = half * aspect, hh = half;
+    if (aspect < 1) { hw = half; hh = half / aspect; }
+    cam = new THREE.OrthographicCamera(-hw, hw, hh, -hh, 0.001, 200);
+    if (view === 'top') { cam.position.set(center.x, center.y + 6, center.z); cam.up.set(0, 0, -1); }
+    else if (view === 'front') { cam.position.set(center.x, center.y, center.z - 6); cam.up.set(0, 1, 0); }
+    else { cam.position.set(center.x + 6, center.y, center.z); cam.up.set(0, 1, 0); }
+    cam.lookAt(center);
+  }
+
+  renderer.render(scene, cam);
+  window.__ready = true;
+}, undefined, (e) => { window.__error = String(e); });
+</script>
+</body>
+</html>
