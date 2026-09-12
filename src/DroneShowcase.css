@@ -1,0 +1,360 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@500;600&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+.page-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background-color: #03010a;
+  color: #e2e8f0;
+  font-family: 'Rajdhani', sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ======================== */
+/*  CYBERPUNK GRID FLOOR    */
+/* ======================== */
+.grid-floor {
+  position: fixed;
+  bottom: 0; left: 0;
+  width: 100%; height: 50vh;
+  background:
+    linear-gradient(to top, rgba(217, 70, 239, 0.06) 1px, transparent 1px),
+    linear-gradient(to right, rgba(217, 70, 239, 0.06) 1px, transparent 1px);
+  background-size: 60px 60px;
+  transform: perspective(500px) rotateX(45deg);
+  transform-origin: bottom center;
+  z-index: 0;
+  mask-image: linear-gradient(to top, rgba(0,0,0,0.4), transparent 80%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.4), transparent 80%);
+  pointer-events: none;
+}
+
+.scanline-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.03) 0px,
+    rgba(0, 0, 0, 0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ======================== */
+/*  NAVIGATION / LOGO       */
+/* ======================== */
+.top-nav {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  padding: 28px 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  background: linear-gradient(to bottom, rgba(3, 1, 10, 0.9), transparent);
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Two Golden Dots - Matching the Perartral reference */
+.logo-dots-group {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.logo-dot-gold {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #c9a43e;
+  box-shadow: 0 0 6px rgba(201, 164, 62, 0.5);
+}
+
+.logo-dot-gold.dim {
+  background-color: #8a7535;
+  box-shadow: none;
+}
+
+.nav-logo {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: #e2e8f0;
+}
+
+/* ======================== */
+/*  LEFT MODEL COLUMN       */
+/*  FIXED so it ALWAYS shows */
+/* ======================== */
+.model-column {
+  width: 50%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+model-viewer {
+  width: 100%;
+  height: 100%;
+  --poster-color: transparent;
+  outline: none;
+  opacity: 0;
+  z-index: 2;
+}
+
+.model-glow {
+  position: absolute;
+  bottom: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 350px;
+  height: 100px;
+  background: radial-gradient(ellipse, rgba(217, 70, 239, 0.3), transparent 70%);
+  border-radius: 50%;
+  filter: blur(25px);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ======================== */
+/*  RIGHT CONTENT COLUMN    */
+/*  Offset by 50% so it sits */
+/*  next to the fixed model  */
+/* ======================== */
+.content-column {
+  width: 50%;
+  margin-left: 50%;
+  z-index: 3;
+  padding-right: 5%;
+}
+
+/* ======================== */
+/*  HERO SECTION            */
+/* ======================== */
+.hero-section {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 5%;
+}
+
+.hero-eyebrow {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 4px;
+  color: #64748b;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 7rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 8px;
+  margin-bottom: 30px;
+  color: #ffffff;
+  text-shadow:
+    0 0 20px rgba(217, 70, 239, 0.3),
+    0 0 60px rgba(217, 70, 239, 0.1);
+  display: flex;
+  overflow: hidden;
+}
+
+.hero-title .char {
+  display: inline-block;
+  opacity: 0;
+}
+
+.hero-subtitle {
+  font-size: 1.4rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: #94a3b8;
+  max-width: 480px;
+  opacity: 0;
+}
+
+.scroll-indicator {
+  margin-top: 60px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  opacity: 0;
+}
+
+.scroll-line {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, #d946ef, transparent);
+  box-shadow: 0 0 8px #d946ef;
+}
+
+.scroll-indicator span {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 5px;
+  color: #64748b;
+}
+
+/* ======================== */
+/*  SPECS SECTION           */
+/* ======================== */
+.specs-section {
+  padding: 120px 0 80px 5%;
+}
+
+.section-eyebrow {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 4px;
+  color: #64748b;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1.15;
+  color: #ffffff;
+  letter-spacing: 3px;
+  margin-bottom: 25px;
+}
+
+.glow-text {
+  color: #d946ef;
+  text-shadow: 0 0 15px rgba(217, 70, 239, 0.5), 0 0 40px rgba(217, 70, 239, 0.2);
+}
+
+.section-desc {
+  font-size: 1.25rem;
+  line-height: 1.7;
+  color: #94a3b8;
+  margin-bottom: 50px;
+  max-width: 500px;
+}
+
+.section-desc strong { color: #ffffff; }
+
+/* ======================== */
+/*  SPEC CARDS GRID         */
+/* ======================== */
+.specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.spec-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(217, 70, 239, 0.12);
+  border-radius: 14px;
+  padding: 28px 24px 24px 24px;
+  opacity: 0;
+  overflow: hidden;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.card-top-line {
+  position: absolute;
+  top: 0; left: 15%;
+  width: 70%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #d946ef, transparent);
+  opacity: 0.5;
+}
+
+.spec-card:hover {
+  border-color: rgba(217, 70, 239, 0.5);
+  box-shadow:
+    0 0 25px rgba(217, 70, 239, 0.15) inset,
+    0 15px 40px rgba(0, 0, 0, 0.4);
+}
+
+.spec-card:hover .spec-icon svg {
+  filter: drop-shadow(0 0 12px #d946ef);
+}
+
+.spec-icon svg {
+  width: 30px;
+  height: 30px;
+  color: #d946ef;
+  filter: drop-shadow(0 0 5px rgba(217, 70, 239, 0.5));
+  margin-bottom: 12px;
+  transition: filter 0.3s;
+}
+
+.spec-label {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.spec-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 1px;
+}
+
+/* ======================== */
+/*  END SECTION             */
+/* ======================== */
+.end-section {
+  height: 50vh;
+  display: flex;
+  align-items: center;
+  padding-left: 5%;
+}
+
+.end-text {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 6px;
+  color: #334155;
+}
+
+/* ======================== */
+/*  RESPONSIVE              */
+/* ======================== */
+@media (max-width: 968px) {
+  .page-wrapper { flex-direction: column; }
+  .model-column { width: 100%; height: 50vh; position: relative; }
+  .content-column { width: 100%; margin-left: 0; padding: 0 20px; }
+  .hero-title { font-size: 3.5rem; }
+  .section-title { font-size: 2rem; }
+  .specs-grid { grid-template-columns: 1fr; }
+}
