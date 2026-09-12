@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# The defence concept note is an unlisted, confidential draft. Two paths
+# resolve to it; keep both out of search indexes.
+Disallow: /defence
+Disallow: /defence/
+Disallow: /*?doc=defence
