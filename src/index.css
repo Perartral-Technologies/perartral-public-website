@@ -2074,6 +2074,272 @@ a {
 }
 
 /* ============================================================
+   3D — hero drone canvas + engineering exploded view
+   ============================================================ */
+.hero-drone {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.drone-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.drone-canvas canvas {
+  touch-action: pan-y;
+}
+
+.hero-3d::after {
+  /* keep the bottom-left text legible over the canvas */
+  background:
+    linear-gradient(180deg, rgba(8, 8, 10, 0.55) 0%, rgba(8, 8, 10, 0.05) 34%, rgba(8, 8, 10, 0.35) 68%, rgba(8, 8, 10, 0.94) 100%),
+    linear-gradient(90deg, rgba(8, 8, 10, 0.82) 0%, rgba(8, 8, 10, 0.2) 55%, rgba(8, 8, 10, 0) 75%);
+}
+
+.drone-loading-veil {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--faint);
+}
+
+.drone-loading {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+/* floating spec chips over the hero drone */
+.hchip {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 9px 12px;
+  border: 1px solid rgba(216, 216, 220, 0.16);
+  background: rgba(8, 8, 10, 0.55);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  animation: chipfloat 7s var(--ease) infinite;
+}
+
+.hchip:nth-of-type(2n) {
+  animation-delay: -3.4s;
+}
+
+.hc-k {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.hc-v {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+
+@keyframes chipfloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+@media (max-width: 900px) {
+  .hchip {
+    display: none;
+  }
+}
+
+/* ---- engineering section (scroll-driven exploded view) ---- */
+.engineering {
+  border-top: 1px solid var(--hairline);
+}
+
+.eng-head {
+  padding-block: clamp(76px, 10vw, 128px) 0;
+}
+
+.eng-track {
+  position: relative;
+  height: 320vh;
+}
+
+.eng-sticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
+.explode-stage {
+  position: absolute;
+  inset: 0;
+}
+
+.explode-stage canvas {
+  display: block;
+}
+
+/* leader lines + anchor dots */
+.d3-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.d3-svg line {
+  stroke: var(--gold-dim);
+  stroke-width: 1;
+}
+
+.d3-svg circle {
+  fill: var(--gold);
+}
+
+.d3-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 6;
+  width: 170px;
+  padding: 10px 12px;
+  border: 1px solid var(--hairline-strong);
+  border-left-color: var(--gold);
+  background: rgba(8, 8, 10, 0.78);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.d3-label b {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.d3-label span {
+  display: block;
+  margin-top: 4px;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* step captions on the left of the sticky stage */
+.eng-steps {
+  position: absolute;
+  left: max(4vw, calc(50% - var(--shell) / 2));
+  bottom: clamp(56px, 9vh, 110px);
+  z-index: 7;
+  width: min(330px, 84vw);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.eng-step {
+  border-left: 1px solid var(--hairline);
+  padding-left: 16px;
+}
+
+.eng-step-n {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+}
+
+.eng-step h3 {
+  margin: 6px 0 4px;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.eng-step p {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.eng-hud {
+  position: absolute;
+  right: max(3vw, 20px);
+  bottom: 20px;
+  z-index: 7;
+  display: flex;
+  gap: 24px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+/* static fallback (no WebGL / reduced motion) */
+.eng-static {
+  margin-top: 44px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: clamp(24px, 4vw, 56px);
+  align-items: center;
+  padding-bottom: clamp(70px, 9vw, 120px);
+}
+
+.eng-static img {
+  width: 100%;
+  border: 1px solid var(--hairline);
+}
+
+.eng-static-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+@media (max-width: 860px) {
+  .eng-static {
+    grid-template-columns: 1fr;
+  }
+  .eng-steps {
+    left: 5vw;
+    bottom: 40px;
+    gap: 10px;
+  }
+  .eng-step p {
+    font-size: 10.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hchip {
+    animation: none;
+  }
+  .eng-track {
+    display: none;
+  }
+}
+
+/* ============================================================
    Print — one-page Anvik spec sheet
    ============================================================ */
 @media print {

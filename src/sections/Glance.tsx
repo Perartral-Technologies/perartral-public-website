@@ -17,7 +17,7 @@ export function Glance() {
             <p className="band-lede">{whoWeAre.lede}</p>
           </Reveal>
           <Reveal delay={100} className="glance-plaque">
-            <img src="/img/perartral-logo.jpg" alt="Perartral — wordmark" />
+            <img src="/img/perartral-logo.jpg" alt="Perartral · wordmark" />
             <span>Incubated at V-Nest · VIT Chennai</span>
           </Reveal>
         </div>
