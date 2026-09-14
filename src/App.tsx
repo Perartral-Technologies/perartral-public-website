@@ -3,6 +3,7 @@ import { Glance } from './sections/Glance'
 import { Missions } from './sections/Missions'
 import { PerartralAI } from './sections/PerartralAI'
 import { Platform } from './sections/Platform'
+import { Engineering } from './sections/Engineering'
 import { Fleet } from './sections/Fleet'
 import { Partnership } from './sections/Partnership'
 import { Roadmap } from './sections/Roadmap'
@@ -41,6 +42,7 @@ export default function App() {
         <Missions />
         <PerartralAI />
         <Platform />
+        <Engineering />
         <Fleet />
         <Partnership />
         <Roadmap />
