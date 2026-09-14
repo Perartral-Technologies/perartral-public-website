@@ -19,6 +19,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Local-only reference material (source decks, not for publication)
+.ignore-only-for-local-context/
+
 # Editor and OS files
 .vscode/
 .idea/
@@ -29,3 +32,10 @@ pnpm-debug.log*
 *.sw?
 .DS_Store
 Thumbs.db
+
+# Emitted from vite.config.ts by tsc -b
+vite.config.js
+vite.config.d.ts
+
+# Local Blender working file (regenerate with npm run build:model)
+tools/anvik.blend
