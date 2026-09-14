@@ -1,0 +1,13 @@
+# Taste
+- Implements model colors/materials as real Blender materials (not viewport-only colors) so they survive GLB export. Confidence: 0.8
+- Keeps animatable parts (e.g., drone rotors) as separate objects with correct origins and transforms so they can be animated independently. Confidence: 0.75
+- Prepares 3D models for web use: apply transforms, clean hierarchy, remove unnecessary geometry/objects, and optimize without noticeable quality loss. Confidence: 0.7
+- Prefers to review material/color changes visually (Material Preview or Rendered view) before any export; do not export until explicitly asked. Confidence: 0.65
+- Displays 3D models on the website with `<model-viewer>`, not Three.js, and handles animations, transitions, scroll effects, and UI interactions with Anime.js. Confidence: 0.8
+- Prefers changes made on a separate feature branch rather than directly on the main branch. Confidence: 0.6
+- Refines existing designs rather than redesigning: keeps the existing geometry, proportions, and shape, changing only materials, colors, detailing, and presentation. Confidence: 0.6
+- Works in a team where parts of the task are handed off, so he often wants a ready-to-paste prompt/instructions for another tool (e.g., OpenCode) instead of the assistant doing the work directly. Confidence: 0.6
+- Wants a professional, premium visual result; for this brand the site palette is warm white/ivory, yellowish gold, and black, applied consistently across CSS, the logo, and 3D model materials. Confidence: 0.8
+- Supplies new source assets (logos, model files) by dropping them into the project folder and expects the assistant to detect and use them rather than referencing external paths. Confidence: 0.6
+- Expects existing/original assets to remain and stay in use (e.g., the original model shown first) rather than being replaced or deleted outright. Confidence: 0.55
+- Keeps 3D source models inside Blender scene files (e.g., a `.blend` with a named collection) rather than as standalone exports; expects the assistant to open and inspect the source file to find the model instead of assuming a separate `.glb` exists and reporting it missing. Points to these sources by absolute local file path (e.g., `C:\...\DroneHangar_scene.blend`) when telling the assistant where a not-yet-added model lives. Confidence: 0.7
