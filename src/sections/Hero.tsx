@@ -29,7 +29,7 @@ export function Hero() {
         <div className="hero-meta">
           <span>MHA / CRPF concept note</span>
           <span>Ref. B.V-7-C/2026-27-C</span>
-          <span>NCNC field demo — Aug 2026</span>
+          <span>NCNC field demo · Aug 2026</span>
         </div>
       </div>
       <div className="hero-foot wide">

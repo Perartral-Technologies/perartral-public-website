@@ -4,8 +4,8 @@ import { missions, qrParams, coastalNeeds, propertyNeeds } from '../data/site'
 
 const reqLists = [qrParams, coastalNeeds, propertyNeeds]
 const reqTitles = [
-  'Key QR parameters (draft) — CRPF Communication & IT Directorate, March 2026',
-  'What the force needs — coastal & maritime surveillance',
+  'Key QR parameters (draft) · CRPF Communication & IT Directorate, March 2026',
+  'What the force needs · coastal & maritime surveillance',
   'What the property-ISR solution must produce',
 ]
 

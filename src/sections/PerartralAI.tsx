@@ -41,13 +41,13 @@ export function PerartralAI() {
       <div className="ai-head shell">
         <SectionIndex n="03" name="Perartral AI" />
         <Reveal>
-          <Eyebrow>The Perartral AI detection model — the company’s core IP</Eyebrow>
+          <Eyebrow>The Perartral AI detection model · the company’s core IP</Eyebrow>
           <SectionHeading lines={['Five steps from', 'flight to evidence pack.']} />
           <p className="band-lede">
-            Autonomy, analytics and the ground control station remain Perartral IP across all three platforms —
+            Autonomy, analytics and the ground control station remain Perartral IP across all three platforms ·
             on-premise software with no cloud dependency, trained on Indian terrain data.
           </p>
-          <span className="tag-illustrative">Illustrative — invented location</span>
+          <span className="tag-illustrative">Illustrative · invented location</span>
         </Reveal>
       </div>
 
@@ -97,7 +97,7 @@ export function PerartralAI() {
         ))}
       </div>
 
-      {/* field evidence — real GCS frames from Amber Wings trials */}
+      {/* field evidence · real GCS frames from Amber Wings trials */}
       <div className="shell field">
         <Reveal>
           <Eyebrow>{fieldFeed.eyebrow}</Eyebrow>

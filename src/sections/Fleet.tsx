@@ -25,7 +25,7 @@ export function Fleet() {
           </h2>
           <p className="band-lede">
             Perartral proposed three platforms to CEPI / CRPF, built on Amber Wings’ shared airframe
-            programme — the same software, GCS and AI layer across all of them.
+            programme · the same software, GCS and AI layer across all of them.
           </p>
         </Reveal>
       </div>
@@ -33,7 +33,7 @@ export function Fleet() {
       {/* ---------- M50 ---------- */}
       <div className="shell fleet-block">
         <Reveal className="fleet-head">
-          <span className="fleet-tag">PS 01 — Medium Logistic Drone</span>
+          <span className="fleet-tag">PS 01 · Medium Logistic Drone</span>
           <h3>
             {m50.name} <em>{m50.title}</em>
           </h3>
@@ -90,7 +90,7 @@ export function Fleet() {
       {/* ---------- ATVA 1.5 ---------- */}
       <div className="shell fleet-block">
         <Reveal className="fleet-head">
-          <span className="fleet-tag">PS 02 — Coastal & Maritime Surveillance</span>
+          <span className="fleet-tag">PS 02 · Coastal & Maritime Surveillance</span>
           <h3>
             {atva.name} <em>{atva.title}</em>
           </h3>

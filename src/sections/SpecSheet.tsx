@@ -9,7 +9,7 @@ export function SpecSheet() {
           <div className="ss-brand">
             PERARTRAL<span>·</span>DEFENCE
           </div>
-          <h1>Anvik — Portable ISR Quadcopter</h1>
+          <h1>Anvik · Portable ISR Quadcopter</h1>
           <p>Portable ISR quadcopter carrying Perartral’s AI analytics for property intelligence.</p>
         </div>
         <div className="ss-tag">Spec sheet</div>
