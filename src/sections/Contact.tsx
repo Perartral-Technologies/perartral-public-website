@@ -1,16 +1,51 @@
 import { Reveal } from '../components/Reveal'
-import { Eyebrow, SectionHeading } from '../components/bits'
-import { contact } from '../data/site'
+import { Eyebrow, SectionIndex } from '../components/bits'
+import { ask, contact, deliverables } from '../data/site'
 
 export function Contact() {
   return (
     <section className="contact" id="contact">
+      <div className="contact-media" aria-hidden="true">
+        <img src="/img/dusk-watch.jpg" alt="" />
+      </div>
       <div className="shell">
+        <SectionIndex n="09" name="Briefing" />
         <Reveal>
           <Eyebrow>{contact.eyebrow}</Eyebrow>
-          <SectionHeading lines={contact.heading} />
+          <h2 className="contact-heading">
+            Ready to <em>demonstrate.</em>
+            <br />
+            Ready to <em>deliver.</em>
+          </h2>
+          <p className="contact-lede">
+            We request the opportunity to present these three platforms to the CRPF QR Cell and CEPI, and to
+            participate in the field demonstration under Ref. B.V-7-C/2026-27-C (UAV Demo).
+          </p>
         </Reveal>
-        <Reveal className="contact-card" delay={80}>
+
+        <div className="contact-cols">
+          <Reveal delay={60}>
+            <span className="req-title">{ask.heading}</span>
+            <ul className="tick-list ask-list">
+              {ask.items.map((a) => (
+                <li key={a}>{a}</li>
+              ))}
+            </ul>
+          </Reveal>
+          <Reveal delay={100}>
+            <span className="req-title">{deliverables.eyebrow}</span>
+            <ul className="deliver-list">
+              {deliverables.items.map((it, i) => (
+                <li key={i}>
+                  <span>{String(i + 1).padStart(2, '0')}</span>
+                  {it}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </div>
+
+        <Reveal className="contact-card" delay={120}>
           <div>
             <div className="k">Contact</div>
             <div className="v">

@@ -1,8 +1,8 @@
 import { useScrollProgress } from '../hooks/useScrollProgress'
 import { TerrainMap } from '../components/TerrainMap'
 import { Reveal } from '../components/Reveal'
-import { Eyebrow, SectionHeading } from '../components/bits'
-import { pipeline, illustrativeAlert } from '../data/site'
+import { Eyebrow, SectionHeading, SectionIndex } from '../components/bits'
+import { pipeline, illustrativeAlert, fieldFeed } from '../data/site'
 
 function AlertCard() {
   return (
@@ -39,9 +39,14 @@ export function PerartralAI() {
   return (
     <section className="ai" id="perartral-ai">
       <div className="ai-head shell">
+        <SectionIndex n="03" name="Perartral AI" />
         <Reveal>
-          <Eyebrow>The Perartral AI detection model</Eyebrow>
+          <Eyebrow>The Perartral AI detection model — the company’s core IP</Eyebrow>
           <SectionHeading lines={['Five steps from', 'flight to evidence pack.']} />
+          <p className="band-lede">
+            Autonomy, analytics and the ground control station remain Perartral IP across all three platforms —
+            on-premise software with no cloud dependency, trained on Indian terrain data.
+          </p>
           <span className="tag-illustrative">Illustrative — invented location</span>
         </Reveal>
       </div>
@@ -90,6 +95,29 @@ export function PerartralAI() {
             </div>
           </article>
         ))}
+      </div>
+
+      {/* field evidence — real GCS frames from Amber Wings trials */}
+      <div className="shell field">
+        <Reveal>
+          <Eyebrow>{fieldFeed.eyebrow}</Eyebrow>
+          <SectionHeading lines={fieldFeed.heading} />
+          <p className="band-lede">{fieldFeed.lede}</p>
+        </Reveal>
+        <Reveal className="field-grid" delay={60}>
+          {fieldFeed.frames.map((f) => (
+            <figure key={f.tag} className="field-frame">
+              <div className="ff-img">
+                <img src={f.img} alt={f.cap} loading="lazy" />
+                <span className="ff-tag">{f.tag}</span>
+              </div>
+              <figcaption>{f.cap}</figcaption>
+            </figure>
+          ))}
+        </Reveal>
+        <Reveal delay={100}>
+          <p className="field-foot">{fieldFeed.footnote}</p>
+        </Reveal>
       </div>
     </section>
   )

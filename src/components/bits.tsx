@@ -12,3 +12,24 @@ export function SectionHeading({ lines }: { lines: string[] }) {
     </h2>
   )
 }
+
+/** Numbered section marker shown at the top of each band. */
+export function SectionIndex({ n, name }: { n: string; name: string }) {
+  return (
+    <div className="section-index">
+      <span className="n">{n}</span>
+      <span className="rule" />
+      <span className="name">{name}</span>
+    </div>
+  )
+}
+
+/** Small mono key:value row used in requirement tables. */
+export function KV({ k, v }: { k: string; v: string }) {
+  return (
+    <li>
+      <span className="k">{k}</span>
+      <span className="v">{v}</span>
+    </li>
+  )
+}

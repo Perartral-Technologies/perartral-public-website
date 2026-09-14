@@ -8,7 +8,7 @@
  * Entirely illustrative; locations are invented.
  */
 const GREY = '#6d6e73'
-const GOLD = '#e4e4e7' // near-white accent (kept name to limit churn)
+const GOLD = '#c8a25a' // champagne accent — matches site register
 
 export function TerrainMap({ step }: { step: number }) {
   const on = (s: number) => (step >= s ? 1 : 0)

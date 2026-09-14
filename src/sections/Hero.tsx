@@ -6,26 +6,35 @@ export function Hero() {
 
   return (
     <header className="hero" id="top" ref={ref}>
-      <div className="hero-backdrop" aria-hidden="true" />
       <img
         className="hero-photo"
-        src="/anvik-hero.jpg"
-        alt="The Anvik quadcopter in flight over a coastal container port."
-        style={{ transform: `scale(${1.08 + progress * 0.06}) translateY(${progress * 24}px)` }}
+        src="/img/fleet-dawn.jpg"
+        alt="Amber Wings unmanned aircraft lined up on the tarmac at dawn."
+        style={{ transform: `scale(${1.1 + progress * 0.08}) translateY(${progress * 36}px)` }}
       />
+      <div className="hero-frame" aria-hidden="true">
+        <span className="hf-corner tl" />
+        <span className="hf-corner tr" />
+        <span className="hf-corner bl" />
+        <span className="hf-corner br" />
+      </div>
       <div className="shell">
-        <p className="eyebrow">{meta.owner} · Defence Vertical</p>
+        <p className="eyebrow">{meta.company} · {meta.vertical}</p>
         <h1>
-          {meta.headline[0]}
+          <em>Autonomy</em> for India’s
           <br />
-          <span className="l2">{meta.headline[1]}</span>
+          internal security.
         </h1>
         <p className="hero-sub">{meta.tagline}</p>
         <div className="hero-meta">
-          <span>Property ISR</span>
-          <span>Portable quadcopter</span>
-          <span>On-premise AI</span>
+          <span>MHA / CRPF concept note</span>
+          <span>Ref. B.V-7-C/2026-27-C</span>
+          <span>NCNC field demo — Aug 2026</span>
         </div>
+      </div>
+      <div className="hero-foot wide">
+        <span>{meta.submission}</span>
+        <span className="scroll-cue">Scroll ↓</span>
       </div>
     </header>
   )

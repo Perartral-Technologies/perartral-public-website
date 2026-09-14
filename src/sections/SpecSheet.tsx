@@ -1,6 +1,6 @@
-import { meta, specs, specSecondary, platformTraits, deliverables, contact } from '../data/site'
+import { anvik, deliverables, contact } from '../data/site'
 
-/** Print-only one-page spec sheet. Hidden on screen; shown by window.print(). */
+/** Print-only one-page Anvik spec sheet. Hidden on screen; shown by window.print(). */
 export function SpecSheet() {
   return (
     <div id="spec-sheet">
@@ -9,8 +9,8 @@ export function SpecSheet() {
           <div className="ss-brand">
             PERARTRAL<span>·</span>DEFENCE
           </div>
-          <h1>{meta.product} — Portable ISR Quadcopter</h1>
-          <p>{meta.tagline}</p>
+          <h1>Anvik — Portable ISR Quadcopter</h1>
+          <p>Portable ISR quadcopter carrying Perartral’s AI analytics for property intelligence.</p>
         </div>
         <div className="ss-tag">Spec sheet</div>
       </div>
@@ -20,7 +20,7 @@ export function SpecSheet() {
           <h2>Platform specification</h2>
           <table>
             <tbody>
-              {specs.map((s) => (
+              {anvik.specs.map((s) => (
                 <tr key={s.label}>
                   <th>{s.label}</th>
                   <td>
@@ -28,7 +28,7 @@ export function SpecSheet() {
                   </td>
                 </tr>
               ))}
-              {specSecondary.map((s) => (
+              {anvik.secondary.map((s) => (
                 <tr key={s.label}>
                   <th>{s.label}</th>
                   <td>{s.value}</td>
@@ -41,7 +41,7 @@ export function SpecSheet() {
         <section>
           <h2>Design</h2>
           <ul>
-            {platformTraits.map((t) => (
+            {anvik.traits.map((t) => (
               <li key={t}>{t}</li>
             ))}
           </ul>
